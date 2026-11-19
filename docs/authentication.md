@@ -1,8 +1,8 @@
 # Authentication flow and token handling
 1. `POST /api/auth/register` validates input, normalizes email, BCrypt-hashes the password, creates a CUSTOMER account, then issues tokens. Public registration cannot assign privileged roles.
 2. `POST /api/auth/login` verifies the password with BCrypt and issues a signed JWT access token plus opaque refresh token. Login errors do not reveal whether an email exists.
-3. The API returns the access token in JSON; the web app keeps it in memory and sends `Authorization: Bearer …`. It does not persist the access token in localStorage. The refresh token is set in an HttpOnly, SameSite=Lax cookie (Secure when configured for HTTPS).
-4. Protected requests pass through Spring Security's stateless JWT filter. Signature, expiry, subject and role claims are verified. Method security and service ownership checks limit customer, restaurant, rider and admin operations.
+3. The API returns the access token in JSON; the web API helper can keep it in memory and send `Authorization: Bearer …`. It does not persist the access token in localStorage. The refresh token is set in an HttpOnly, SameSite=Lax cookie (Secure when configured for HTTPS). A login form and refresh orchestration in the PWA are not implemented yet.
+4. Protected requests pass through Spring Security's stateless JWT filter. Signature, expiry, subject and role claims are verified. Current route gates are: customer-only `POST /api/orders`; admin-only `/api/admin/**`; restaurant or admin `/api/restaurant/**`; rider or admin `/api/rider/**`. Generic protected routes require authentication. Ownership checks and panel APIs are still future work.
 5. `POST /api/auth/refresh` rotates refresh tokens: only a hash is stored in PostgreSQL, the old session is revoked, and a new pair is issued. `POST /api/auth/logout` revokes the presented session and expires the cookie.
 6. Passwords are never returned or logged. Refresh tokens are random, stored as SHA-256 hashes, and compared server-side. JWT signing key is supplied only through `JWT_SECRET`; use a cryptographically random secret and a managed secret store in production.
 

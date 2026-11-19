@@ -1,1 +1,1 @@
-{"name":"BhojBangla","short_name":"BhojBangla","start_url":"/","display":"standalone","background_color":"#fbf8f1","theme_color":"#123c2e","icons":[]}
+{"name":"BhojBangla","short_name":"BhojBangla","description":"Discover food and delivery in Bangladesh","start_url":"/","display":"standalone","background_color":"#fbf8f1","theme_color":"#123c2e","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
