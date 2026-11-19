@@ -1,0 +1,6 @@
+export type Locale = "en" | "bn";
+export const copy = {
+ en: { tagline:"Good food, close to home.", location:"Delivering to", explore:"A little joy, delivered.", browse:"Explore local flavours", popular:"Made for your cravings", categories:"What sounds good?", seeAll:"See all", search:"Search dishes or kitchens", empty:"Your neighbourhood menu is taking shape.", signin:"Sign in", language:"বাংলা", fresh:"A better kind of food day", time:"30–45 min", zones:"Dhaka · Chattogram · Sylhet", orders:"Your orders", restaurant:"Restaurant", admin:"Admin", rider:"Rider", customer:"Customer", cod:"Cash on delivery", discover:"Discover" },
+ bn: { tagline:"ঘরের কাছেই পছন্দের খাবার।", location:"ডেলিভারি হবে", explore:"স্বাদের আনন্দ, পৌঁছে যাবে ঘরে।", browse:"স্থানীয় স্বাদ খুঁজুন", popular:"আপনার পছন্দের আয়োজন", categories:"কী খেতে ইচ্ছে করছে?", seeAll:"সব দেখুন", search:"খাবার বা রেস্টুরেন্ট খুঁজুন", empty:"আপনার এলাকার মেনু তৈরি হচ্ছে।", signin:"সাইন ইন", language:"English", fresh:"আজকের দিনটা হোক সুস্বাদু", time:"৩০–৪৫ মিনিট", zones:"ঢাকা · চট্টগ্রাম · সিলেট", orders:"আপনার অর্ডার", restaurant:"রেস্টুরেন্ট", admin:"অ্যাডমিন", rider:"রাইডার", customer:"ক্রেতা", cod:"ক্যাশ অন ডেলিভারি", discover:"খুঁজুন" }
+} as const;
+export function t(locale:Locale,key:keyof typeof copy.en):string{return copy[locale][key]}

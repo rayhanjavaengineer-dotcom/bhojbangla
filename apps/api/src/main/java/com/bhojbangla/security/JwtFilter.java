@@ -1,0 +1,6 @@
+package com.bhojbangla.security;
+import java.io.IOException;import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;import org.springframework.security.core.authority.SimpleGrantedAuthority;import org.springframework.security.core.context.SecurityContextHolder;import org.springframework.stereotype.Component;import org.springframework.web.filter.OncePerRequestFilter;import jakarta.servlet.FilterChain;import jakarta.servlet.ServletException;import jakarta.servlet.http.HttpServletRequest;import jakarta.servlet.http.HttpServletResponse;
+@Component public class JwtFilter extends OncePerRequestFilter{
+private final JwtService jwt;public JwtFilter(JwtService jwt){this.jwt=jwt;}
+@Override protected void doFilterInternal(HttpServletRequest req,HttpServletResponse res,FilterChain chain)throws ServletException,IOException{String h=req.getHeader("Authorization");if(h!=null&&h.startsWith("Bearer ")){try{var c=jwt.parse(h.substring(7));var auth=new UsernamePasswordAuthenticationToken(c.getSubject(),null,java.util.List.of(new SimpleGrantedAuthority("ROLE_"+c.get("role",String.class))));SecurityContextHolder.getContext().setAuthentication(auth);}catch(RuntimeException ex){SecurityContextHolder.clearContext();res.sendError(401,"Unauthorized");return;}}chain.doFilter(req,res);}
+}

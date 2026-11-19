@@ -1,0 +1,2 @@
+import{describe,it,expect}from"vitest";import{districts,divisions,districtsByDivision}from"./coverage";
+describe("Bangladesh district coverage selector",()=>{it("lists all eight divisions",()=>expect(divisions).toHaveLength(8));it("includes all 64 districts",()=>expect(Object.values(districtsByDivision).flat()).toHaveLength(64));it("returns no districts for unknown divisions",()=>expect(districts("Atlantis")).toEqual([]))});

@@ -1,0 +1,1 @@
+{"name":"bhojbangla","private":true,"packageManager":"pnpm@9.15.0","scripts":{"dev":"pnpm --filter @bhojbangla/web dev","build":"pnpm --filter @bhojbangla/web build","test":"pnpm --filter @bhojbangla/web test"},"devDependencies":{"typescript":"^5.7.3"}}

@@ -1,0 +1,2 @@
+# Bangladesh delivery coverage
+The migration seeds Bangladesh's 8 divisions and 64 districts as selectable coverage metadata. Delivery availability is decided by an enabled district-city coverage record; only Dhaka district/city is initially enabled. The API coverage endpoint is a small public placeholder and must be connected to the database before accepting orders. Add verified city/area polygons, service hours, fees, and operational capacity through an admin workflow before launch. No fabricated restaurant listings are seeded.
