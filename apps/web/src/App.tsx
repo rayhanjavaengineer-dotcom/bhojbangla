@@ -1,51 +1,16 @@
-import { useEffect, useState } from "react";
-import { ArrowRight, ArrowUpRight, Check, ChevronDown, Clock, Compass, MapPin, Search, ShoppingBag, Sparkles, Utensils } from "lucide-react";
-import { copy, type Locale, t } from "./i18n";
-import { divisions, districts } from "./coverage";
-
-const categories = [["🍛","Rice & curry"],["🍜","Noodles"],["🥟","Snacks"],["🍰","Desserts"],["☕","Tea & coffee"]];
-type CoverageDistrict = { name: string; division: string; enabled: boolean };
-
-export default function App() {
-  const [locale,setLocale] = useState<Locale>("en");
-  const [role,setRole] = useState<"customer"|"restaurant"|"admin"|"rider">("customer");
-  const [division,setDivision] = useState("Dhaka");
-  const [district,setDistrict] = useState("Dhaka");
-  const [enabledDistricts,setEnabledDistricts] = useState<Set<string>>(new Set());
-  const [count,setCount] = useState(0);
-  const x=(key:keyof typeof copy.en)=>t(locale,key);
-
-  useEffect(() => {
-    const base = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
-    fetch(`${base}/coverage/districts`)
-      .then(r => { if (!r.ok) throw new Error("coverage unavailable"); return r.json() as Promise<CoverageDistrict[]>; })
-      .then(rows => setEnabledDistricts(new Set(rows.filter(row => row.enabled).map(row => row.name))))
-      .catch(() => setEnabledDistricts(new Set()));
-  }, []);
-
-  const chooseDivision=(value:string) => {
-    setDivision(value);
-    const options=districts(value);
-    setDistrict(options.find(name=>enabledDistricts.has(name)) ?? options[0] ?? "");
-  };
-
-  return <main>
-    <header className="top">
-      <a className="brand" href="#"><span className="mark">ভ</span><span>Bhoj<span className="brand-green">Bangla</span><small>{x("tagline")}</small></span></a>
-      <div className="loc"><MapPin size={16}/><span><small>{x("location")}</small><select aria-label="Division" value={division} onChange={e=>chooseDivision(e.target.value)}>{divisions.map(d=><option key={d}>{d}</option>)}</select><select className="district" aria-label="District" value={district} onChange={e=>setDistrict(e.target.value)}>{districts(division).map(d=><option key={d} value={d} disabled={!enabledDistricts.has(d)}>{d}{enabledDistricts.has(d)?"":" — unavailable"}</option>)}</select></span><ChevronDown size={14}/></div>
-      <div className="search"><Search size={17}/><input aria-label={x("search")} placeholder={x("search")}/><kbd>⌘ K</kbd></div>
-      <button className="lang" onClick={()=>setLocale(locale==="en"?"bn":"en")}>{x("language")}</button>
-      <button className="signin">{x("signin")} <ArrowRight size={15}/></button>
-      <button className="bag" aria-label="Cart"><ShoppingBag size={18}/><i>{count}</i></button>
-    </header>
-    <nav className="roles">{(["customer","restaurant","admin","rider"] as const).map(r=><button className={role===r?"active":""} key={r} onClick={()=>setRole(r)}>{x(r)}</button>)}</nav>
-    <section className="hero">
-      <div className="hero-copy"><span className="eyebrow"><Sparkles size={14}/> {x("fresh")}</span><h1>{x("explore")}<em> {locale==="bn"?"আজই।":"Today."}</em></h1><p>{x("browse")} — thoughtfully made, right around the corner.</p><button className="primary" onClick={()=>document.getElementById("menu")?.scrollIntoView({behavior:"smooth"})}>{x("discover")} <ArrowRight size={17}/></button><div className="social"><small>Made with care in Bangladesh</small></div></div>
-      <div className="hero-art"><div className="sun"></div><div className="plate"><div className="food">🍲</div></div><div className="floating note"><span>✦</span><b>Freshly<br/>made</b></div><div className="floating time"><Clock size={15}/><b>{x("time")}</b></div><div className="herb h1">✿</div><div className="herb h2">✾</div></div>
-      <div className="hero-foot"><span>01 / 03</span><span>{x("zones")}</span></div>
-    </section>
-    <section className="cats"><div className="section-head"><div><small className="eyebrow">{x("categories")}</small><h2>{x("popular")}</h2></div><button className="text-btn">{x("seeAll")} <ArrowUpRight size={16}/></button></div><div className="cat-grid">{categories.map(([emoji,name],i)=><button className="cat" key={name} onClick={()=>setCount(count+1)}><span className={"cat-art art"+i}>{emoji}</span><b>{locale==="bn"?["ভাত ও তরকারি","নুডলস","নাশতা","মিষ্টি","চা ও কফি"][i]:name}</b><small>Explore <ArrowRight size={12}/></small></button>)}</div></section>
-    <section className="discover" id="menu"><div className="section-head"><div><small className="eyebrow">CURATED FOR YOUR CITY</small><h2>{role==="customer"?"A taste of the neighbourhood":role==="restaurant"?"Restaurant workspace":role==="admin"?"Platform overview":"Rider workspace"}</h2></div><span className="coverage"><Check size={14}/> {district}, {division}</span></div>{role==="customer"?<div className="empty"><div className="empty-icon"><Utensils size={24}/></div><h3>{x("empty")}</h3><p>We’re preparing a thoughtful local selection. Check back soon.</p><button className="outline" onClick={()=>setCount(count+1)}><Compass size={15}/> Explore categories</button></div>:<div className="workspace"><div className="workspace-icon">{role==="admin"?"✦":role==="rider"?"↗":"⌂"}</div><div><h3>{role==="restaurant"?"Your kitchen, your rhythm":role==="admin"?"Everything in one place":"The next delivery starts here"}</h3><p>{role==="restaurant"?"Manage menus and incoming orders once your account is provisioned.":role==="admin"?"Review coverage, partners, and platform operations.":"See assigned deliveries and update order progress."}</p></div><button className="outline">{x("signin")} <ArrowRight size={15}/></button></div>}</section>
-    <footer><a className="brand foot-brand" href="#"><span className="mark">ভ</span><span>Bhoj<span className="brand-green">Bangla</span></span></a><span>Made for the way Bangladesh eats.</span><span>© 2026 BhojBangla</span></footer>
-  </main>;
+import { useEffect,useState } from "react";
+import { api } from "./api"; import { restoreSession,signOut } from "./auth"; import type { CustomerSession } from "./auth"; import { AuthForm } from "./AuthForm"; import { currentLocation } from "./location"; import { t,type Locale } from "./i18n";
+type District={id:number;name:string;division:string};
+export default function App(){
+ const [locale,setLocale]=useState<Locale>("en"); const [districts,setDistricts]=useState<District[]>([]); const [coverage,setCoverage]=useState<"loading"|"ready"|"error">("loading"); const [selected,setSelected]=useState(""); const [session,setSession]=useState<CustomerSession>(); const [sessionLoading,setSessionLoading]=useState(true); const [auth,setAuth]=useState(false); const [gps,setGps]=useState(""); const [gpsBusy,setGpsBusy]=useState(false); const [logoutError,setLogoutError]=useState(""); const x=(key:keyof typeof import("./i18n") extends never?never:Parameters<typeof t>[1])=>t(locale,key);
+ async function load(){setCoverage("loading");try{const rows=await api<District[]>("/coverage/districts");setDistricts(rows);setSelected(current=>rows.some(d=>d.name===current)?current:rows[0]?.name??"");setCoverage("ready")}catch{setCoverage("error")}}
+ useEffect(()=>{void load();restoreSession().then(s=>setSession(s)).finally(()=>setSessionLoading(false))},[]);
+ useEffect(()=>{document.documentElement.lang=locale},[locale]);
+ async function locate(){setGps("");setGpsBusy(true);try{await currentLocation();setGps(x("gpsHelp"))}catch(e){setGps(e instanceof Error?e.message:x("gpsUnsupported"))}finally{setGpsBusy(false)}}
+ async function logout(){setLogoutError("");try{await signOut();setSession(undefined)}catch{setLogoutError(x("error"));setSession(undefined)}}
+ return <main className="customer-app"><header className="top"><a className="brand" href="#"><span className="mark">ভ</span><span>Bhoj<span className="brand-green">Bangla</span><small>{x("tagline")}</small></span></a><div className="header-actions"><button className="lang" onClick={()=>setLocale(locale==="en"?"bn":"en")}>{x("language")}</button>{session?<button className="outline" onClick={()=>void logout()}>{x("signOut")}</button>:<button className="primary" onClick={()=>setAuth(true)}>{x("signIn")}</button>}</div></header>
+ <section className="hero customer-hero"><span className="eyebrow">BHOJBANGLA</span><h1>{x("discover")}</h1><p>{x("tagline")}</p></section>
+ <section className="discover customer-discover"><div className="section-head"><div><small className="eyebrow">{x("location")}</small><h2>{x("district")}</h2></div></div>{coverage==="loading"?<p role="status">{x("load")}</p>:coverage==="error"?<div role="alert"><p>{x("coverageError")}</p><button className="outline" onClick={()=>void load()}>{x("retry")}</button></div>:districts.length===0?<p role="status">{x("noCoverage")}</p>:<><label className="district-picker">{x("district")}<select value={selected} onChange={e=>setSelected(e.target.value)}>{districts.map(d=><option key={d.id} value={d.name}>{d.name} · {d.division}</option>)}</select></label><button className="outline" disabled={gpsBusy} onClick={()=>void locate()}>{gpsBusy?x("gpsWait"):x("gps")}</button><p className="muted">{gps||x("gpsHelp")}</p><div className="empty"><h3>{x("emptyTitle")}</h3><p>{x("emptyBody")}</p></div></>}</section>
+ {sessionLoading&&<p role="status" className="session-status">{x("loading")}</p>}{session&&<p role="status" className="session-status">{x("session")}</p>}{logoutError&&<p role="alert">{logoutError}</p>}{auth&&<AuthForm locale={locale} onClose={()=>setAuth(false)} onSuccess={value=>{setSession(value);setAuth(false)}}/>}<footer><span>BhojBangla</span><span>© 2026</span></footer></main>
 }
+
