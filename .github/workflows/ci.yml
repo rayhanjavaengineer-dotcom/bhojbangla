@@ -20,7 +20,7 @@ jobs:
         working-directory: apps/api
         env:
           JWT_SECRET: ci-only-test-secret-value-must-be-at-least-32-bytes-long
-        run: mvn -B test
+        run: mvn -B -U test
   web:
     runs-on: ubuntu-latest
     steps:
