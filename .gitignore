@@ -1,6 +1,7 @@
 node_modules/
 dist/
 target/
+*.tsbuildinfo
 .env
 .env.*
 !.env.example
@@ -8,3 +9,4 @@ target/
 .idea/
 .vscode/
 .DS_Store
+

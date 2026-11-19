@@ -10,3 +10,4 @@ protected RefreshSession(){}
 public RefreshSession(String hash,UserAccount user,Instant expiry){tokenHash=hash;this.user=user;expiresAt=expiry;}
 public String getTokenHash(){return tokenHash;}public UserAccount getUser(){return user;}public Instant getExpiresAt(){return expiresAt;}public Instant getRevokedAt(){return revokedAt;}public void revoke(){revokedAt=Instant.now();}
 }
+

@@ -6,7 +6,9 @@ import jakarta.persistence.*;
  @Column(nullable=false) private String division;
  @Column(nullable=false) private boolean enabled;
  protected DistrictEntity(){}
+ public Long getId(){return id;}
  public String getName(){return name;}
  public String getDivision(){return division;}
  public boolean isEnabled(){return enabled;}
 }
+
